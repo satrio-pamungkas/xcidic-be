@@ -1,13 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User)
+    private readonly repository: Repository<User>
+  ) {}
+
+  public async create(createUserDto: CreateUserDto) {
+    const user = this.repository.create(createUserDto);
+    await this.repository.save(user);
+
+    const returnMessage = {
+      message: 'User succesfully created'
+    }
+
+    return returnMessage;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  public async findAll(options: IPaginationOptions) {
+    return paginate<User>(this.repository, options);
   }
 }
