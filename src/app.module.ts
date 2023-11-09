@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import typeorm from './shared/configs/typeorm.config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -18,6 +19,11 @@ import typeorm from './shared/configs/typeorm.config';
       useFactory: async (configService: ConfigService) => (
         configService.get("typeorm")
       )
+    }),
+    JwtModule.register({
+      global: true,
+      secret: 'THIS_IS_SECRET_EXAMPLE',
+      signOptions: { expiresIn: '60s' },
     }),
     UserModule,
     AuthModule
